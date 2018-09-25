@@ -40,6 +40,18 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_URL'),
     ],
+
+    'facebook' => [
+        'client_id'     => env('FACEBOOK_ID'),
+        'client_secret' => env('FACEBOOK_SECRET'),
+        'redirect'      => env('FACEBOOK_URL'),
+    ],
+
+    'reddit' => [
+        'client_id'     => env('REDDIT_ID'),
+        'client_secret' => env('REDDIT_SECRET'),
+        'redirect'      => env('REDDIT_URL'),
+    ],
     
 /*    'google' => [
         'client_id' => "871856989569-o1rti6ku5mbp5ssksftqvvdr72nraqns.apps.googleusercontent.com",

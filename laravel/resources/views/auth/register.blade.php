@@ -1,7 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 
@@ -9,7 +17,7 @@
                             <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
 
                             <div class="col-md-6">
-                                <input id="name" type="text" class="form-control {{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" required autofocus>
+                                <input id="name" type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" required autofocus>
 
                                 @if ($errors->has('name'))
                                     <span class="invalid-feedback">
@@ -18,7 +26,6 @@
                                 @endif
                             </div>
                         </div>
-        Create an anti-fake-news global identity, powered by cryptocurrency. 
 
                         <div class="form-group row">
                             <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
@@ -63,5 +70,30 @@
                                 </button>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-offset-3">
+                                    <a href="{{ url('/auth/facebook') }}" class="btn btn-primary btn-facebook"><i class="fa fa-facebook"></i> Log-in with Facebook</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-offset-3">
+                                    <a href="{{ url('/auth/reddit') }}" class="btn btn-primary btn-reddit"><i class="fa fa-reddit fa-fw"></i> Log-in with Reddit</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{--<div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-offset-3">
+                                    <a href="{{ url('/auth/facebook') }}" class="btn waves-effect btn-facebook"><i class="fa fa-facebook"></i> Log-in with Facebook</a>
+                                </div>
+                            </div>
+                        </div>--}}
+
                     </form>
 @endsection

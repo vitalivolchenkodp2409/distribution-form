@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title>Project Oblio Distribution</title>
+    <title>Project Oblio Airdrop</title>
     <!-- Favicon-->
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 
@@ -28,7 +28,7 @@
 <body class="login-page">
     <div class="login-box">
         <div class="logo">
-            <a href="javascript:void(0);"><b>Project Oblio</b> Distribution</a>
+            <a href="javascript:void(0);">Project Oblio Airdropppp</a>
             <small></small>
         </div>
         <div class="card">

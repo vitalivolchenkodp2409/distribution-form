@@ -6,7 +6,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Project Oblio Distribution</title>
+        <title>Project Oblio Airdrop</title>
 
         <!-- CSS -->
         <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
@@ -111,6 +111,7 @@
                 text-decoration: underline;
                 color: #666;
             }
+
             .btn-register {
                 background-color: #1CB94E;
                 outline: none;
@@ -161,7 +162,7 @@
                                             <a href="#" class="active" id="login-form-link">Login</a>
                                         </div>
                                         <div class="col-xs-6">
-                                            <a href="#" id="register-form-link">Register</a>
+                                                <a href="#" id="register-form-link">Register</a>
                                         </div>
                                     </div>
                                     <hr>
@@ -180,8 +181,11 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-12">
-                                            <form id="login-form" action="{{ route('login') }}" method="post" role="form" style="display: block;">
+
+                                            <form id="login-form" action="{{ url('/welcome') }}" method="post" role="form" style="display: block;" class="{{ isset($data['register']) ? 'active':''  }}">
                                                 {{ csrf_field() }}
+
+
                                                 <div class="form-group">
                                                     <input type="email" name="email" id="username" tabindex="1" class="form-control" placeholder="  Email" value="">
                                                 </div>
@@ -199,6 +203,23 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-6 col-sm-offset-3">
+                                                            <a href="{{ url('/auth/facebook') }}" class="btn btn-primary btn-facebook"><i class="fa fa-facebook"></i> Log-in with Facebook</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-6 col-sm-offset-3">
+                                                            <a href="{{ url('/auth/reddit') }}" class="btn btn-primary btn-reddit"><i class="fa fa-reddit fa-fw"></i> Log-in with Reddit</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <div class="col-lg-12">
@@ -209,21 +230,40 @@
                                                     </div>
                                                 </div>
                                             </form>
-                                            <form id="register-form" action="{{ url('/signup') }}" method="post" role="form" style="display: none;">
+
+                                            <form id="register-form" action="{{ url('/welcome') }}" method="post" role="form" style="display: none;" class="{{ isset($data['register']) ? 'active':''  }}">
 
                                                 {{ csrf_field() }}
+                                                @if(!empty($data['message']))
+                                                    <div class="alert alert-danger" role="alert">
+                                                        {{ $data['message'] }}
+                                                    </div>
+                                                @endif
 
                                                 <div class="form-group">
-                                                    <input type="text" name="name" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
+                                                        <input type="text" name="name" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
                                                 </div>
                                                 <div class="form-group">
-                                                    <input type="email" name="email" id="email" tabindex="1" class="form-control" placeholder="  Email" value="">
+                                                    @if(!empty($data['email']))
+                                                        <input type="email" name="email" id="email" tabindex="1" class="form-control" placeholder="  Email" value="{{ $data['email'] }}">
+                                                    @else
+                                                        <input type="email" name="email" id="email" tabindex="1" class="form-control" placeholder="  Email" value="">
+                                                    @endif
                                                 </div>
                                                 <div class="form-group">
-                                                    <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Password">
+                                                    @if(!empty($password))
+                                                        <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Password" value="{{ $password }}">
+                                                     @else
+                                                        <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Password">
+                                                    @endif
                                                 </div>
                                                 <div class="form-group">
-                                                    <input type="password" name="password_confirmation" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password">
+                                                    @if(!empty($password))
+                                                        <input type="password" name="password_confirmation" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password"
+                                                               value="{{ $password }}>
+                                                    @else
+                                                        <input type="password" name="password_confirmation" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password">
+                                                    @endif
                                                 </div>
                                                 <div class="form-group">
                                                     <div class="row">
@@ -232,6 +272,23 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-6 col-sm-offset-3">
+                                                            <a href="{{ url('/auth/facebook') }}" class="btn btn-primary btn-facebook"><i class="fa fa-facebook"></i> Log-in with Facebook</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-6 col-sm-offset-3">
+                                                            <a href="{{ url('/auth/reddit') }}" class="btn btn-primary btn-reddit"><i class="fa fa-reddit fa-fw"></i> Log-in with Reddit</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                             </form>
                                         </div>
                                     </div>
@@ -268,6 +325,7 @@
         <![endif]-->
         <script type="text/javascript">
             $(function() {
+
                 $('#login-form-link').click(function(e) {
                     $("#login-form").delay(100).fadeIn(100);
                     $("#register-form").fadeOut(100);
@@ -282,6 +340,14 @@
                     $(this).addClass('active');
                     e.preventDefault();
                 });
+
+                @if (isset( $data['register'] ))
+                    reg = '{{$data['register']}}';
+                if ( reg ){
+                    $('#register-form-link').click();
+                }
+                @endif
+
             });
         </script>
 

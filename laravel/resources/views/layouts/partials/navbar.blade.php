@@ -105,18 +105,32 @@
                             </a>
                         </li>
 			<li>
-                            <a href="{{ url('/fives/create') }}">
+                            <a href="{{ route('fbpage') }}">
                                 <i class="material-icons">camera_roll</i>
-                                <span>Insta Followers</span>
+                                <span>Link Facebook</span>
                             </a>
                         </li>
 
-                        <li>
+                       {{-- <li>
                             <a href="{{ url('/fives/create') }}">
                                 <i class="material-icons">camera_roll</i>
                                 <span>Reddit Karma</span>
                             </a>
+                        </li>--}}
+                        <li>
+                            <a href="{{ route('reddpage') }}">
+                                <i class="material-icons">camera_roll</i>
+                                <span>Reddit Karma</span>
+                            </a>
                         </li>
+
+                        <li>
+                            <a href="{{ route('snapchat_page') }}">
+                                <i class="material-icons">camera_roll</i>
+                                <span>Snapchat Story</span>
+                            </a>
+                        </li>
+
 			</ul>
 			<li class="header">LEGACY VERIFICATIONS</li>
                                 <ul>

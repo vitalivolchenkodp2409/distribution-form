@@ -13,7 +13,7 @@
                     <div class="card">
                         <div class="header">
                             <h2>
-                                Welcome to your Project Oblio Distribution Dashboard
+                                Welcome to your Project Oblio Airdrop Dashboard
                             </h2>
                         </div>
                         <div class="body">
@@ -89,12 +89,76 @@
                                         </div>
                                       </div>
                                     </div>
+
+                                      {{--<div class="form-group">
+                                          <div class="row">
+                                              <div class="col-md-6 col-sm-offset-3">
+                                                  <a href="{{ url('/photos/facebook') }}" class="btn btn-facebook"><i class="fa fa-facebook"></i> Add access to photos</a>
+                                              </div>
+                                          </div>
+                                      </div>--}}
+
+
                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    {{--@if ( $fotos = session('fotos'))
+
+                        <div class="card">
+                            <div class="header">
+                                <h2>
+                                    Facebook fotos
+                                </h2>
+                            </div>
+                            <div class="body">
+
+                                <div class="row">
+
+
+                                    @foreach($fotos as $foto)
+                                        <div class="col-3">
+                                             <img src="{{$foto['images'][0]['source']}}" alt="{{$foto['id']}}" height="200">
+                                        </div>
+                                    @endforeach
+
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+
+                    @if ( $friends = session('friends'))
+
+                        <div class="card">
+                            <div class="header">
+                                <h2>
+                                    Facebook friends
+                                </h2>
+                            </div>
+                            <div class="body">
+
+                                <div class="row">
+
+                                    @foreach($friends as $friend)
+
+                                            <p> <img src="{{$friend['picture']['data']['url']}}" alt="{{$friend['picture']['data']['url']}}" height="{{$friend['picture']['data']['height']}}">
+                                                {{$friend['id']}} : {{$friend['name']}}</p>
+
+                                    @endforeach
+
+                                </div>
+                            </div>
+                        </div>
+
+                    @endif
+--}}
+
                 </div>
+
+
             <!-- #END# Input -->
         </div>
     </section>

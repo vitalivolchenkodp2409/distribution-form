@@ -11,24 +11,20 @@ class CreateUsersTable extends Migration
      *
      * @return void
      */
-    
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name')->unique();
+            $table->string('name');
             $table->string('email')->unique();
-            $table->string('password');
+            $table->string('password')->default(bcrypt('123456'));
             $table->string('type')->nullable();
             $table->string('avatar')->nullable();
-            $table->string('arrows')->default('0')->nullable();
-            $table->string('karma')->default('0')->nullable();
-            $table->string('last_dub_time')->default('0')->nullable();
             $table->string('point')->default('0')->nullable();
-	    $table->string('karma')->default('0')->nullable();
-	    $table->string('last_dub_time')->default('0')->nullable();
             $table->integer('form_level')->default(0)->nullable();
             $table->string('ip')->nullable();
+            $table->float('arrows')->nullable();
+            $table->float('karma')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

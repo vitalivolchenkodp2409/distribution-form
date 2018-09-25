@@ -5,6 +5,8 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\SocialProvider;
+use App\Photo;
 
 class User extends Authenticatable
 {
@@ -16,7 +18,8 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','avatar','ip','arrows','karma','last_dub_time',
+        //'name', 'email', 'password', 'provider', 'provider_id',
+        'name', 'email', 'password', 'arrows', 'avatar',
     ];
 
     /**
@@ -27,4 +30,19 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function socialProviders()
+    {
+        return $this->hasMany(SocialProvider::class);
+    }
+
+    public function photo()
+    {
+        return $this->hasMany(Photo::class);
+    }
+
+    public function friends()
+    {
+        return $this->hasMany(Friends::class);
+    }
 }

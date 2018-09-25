@@ -4,10 +4,8 @@
 
     <form class="form-horizontal" method="POST" action="{{ route('login') }}">
         {{ csrf_field() }}
-       <div class="msg">Sign in</div>
+        <div class="msg">Sign in</div>
         <div class="input-group">
-	Create an anti-fake-news global identity, powered by cryptocurrency. <br>
-
             <span class="input-group-addon">
                 <i class="material-icons">person</i>
             </span>
@@ -40,6 +38,22 @@
             </div>
             <div class="col-xs-4">
                 <button class="btn btn-block bg-pink waves-effect" type="submit">SIGN IN</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-6 col-sm-offset-3">
+                    <a href="{{ url('/auth/facebook') }}" class="btn btn-primary btn-facebook"><i class="fa fa-facebook"></i> Log-in with Facebook</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-6 col-sm-offset-3">
+                    <a href="{{ url('/auth/reddit') }}" class="btn btn-primary btn-reddit"><i class="fa fa-reddit fa-fw"></i> Log-in with Reddit</a>
+                </div>
             </div>
         </div>
         <!-- <div class="row m-t-15 m-b--20">
