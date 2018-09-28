@@ -37,11 +37,15 @@
                                 </ul>
                             @endif
 
-                            <div class="center-block">
+                            @if(Session::has('res'))
+                                <div class="form-group" align="center">
+                                    <p class="text-danger">{{ Session::get('res') }}</p>
+                                </div>       
+                            @endif                           
 
                                 @if(isset($data['provider']) && isset($data['mess']) )
 
-                                    <div class="form-group" align="center">
+                                    <div class="form-group danger" align="center">
                                         <p>
                                             {{ $data['mess'] }}
                                         </p>

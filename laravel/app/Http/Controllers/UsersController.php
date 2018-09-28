@@ -17,11 +17,9 @@ class UsersController extends Controller
 {
 
     public function store(Request $request)
-    {
-        //dd('aaaaaaa');
-        $request->validate([
-            //'email' => 'required|unique:users',
-            'email' => 'required',
+    {        
+        $request->validate([    
+            'email' => 'required|unique:users',            
             'name' => 'required',
             'password' => 'min:6',
             'password_confirmation' => 'required_with:password|same:password|min:6'
@@ -31,15 +29,12 @@ class UsersController extends Controller
 
         if (Session::has('provider') && Session::has('provider_id')) {
             $provider = Session::get('provider');
-            $avatar = Session::get('avatar');
-            /*if($provider == 'facebook') {
-                $arrows = 3;
-            } else {
-                $arrows = Session::get('arrows');
-            }*/
+            $avatar = Session::get('avatar');            
             $arrows = Session::get('arrows');
             $arrows = (float)$arrows;
-            //dd($arrows);
+            if($arrows > 30){
+                $arrows = 30;
+            }            
             ///check isset authUser
             $authUser = User::where('email', $request->email)->first();
             if(!$authUser) {
@@ -63,9 +58,7 @@ class UsersController extends Controller
                 $socialProvider = $user->socialProviders()->create([
                     'provider' => $provider,
                     'provider_id' => $provider_id,
-                ]);
-                //$socialProvider = $user->socialProviders;
-                //dd($socialProvider);
+                ]);                
                 Session::forget('provider');
                 Session::forget('provider_id');
                 Session::forget('avatar');
@@ -82,14 +75,12 @@ class UsersController extends Controller
                 $socialProvider = $authUser->socialProviders()->create([
                     'provider' => $provider,
                     'provider_id' => $provider_id,
-                ]);
-                //$socialProvider = $user->socialProviders;
-                //dd($socialProvider);
+                ]);                
                 Session::forget('provider');
                 Session::forget('provider_id');
                 Session::forget('avatar');
                 Session::forget('arrows');
-                //Session::forget('provider_token');
+                
                 Auth::login($authUser, true);
                 return redirect()->to('home');
             }

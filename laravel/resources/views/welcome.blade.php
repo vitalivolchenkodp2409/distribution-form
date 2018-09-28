@@ -182,7 +182,7 @@
                                     <div class="row">
                                         <div class="col-lg-12">
 
-                                            <form id="login-form" action="{{ url('/welcome') }}" method="post" role="form" style="display: block;" class="{{ isset($data['register']) ? 'active':''  }}">
+                                            <form id="login-form" action="{{ route('login') }}" method="post" role="form" style="display: block;" class="{{ isset($data['register']) ? 'active':''  }}">
                                                 {{ csrf_field() }}
 
 
@@ -235,13 +235,23 @@
 
                                                 {{ csrf_field() }}
                                                 @if(!empty($data['message']))
-                                                    <div class="alert alert-danger" role="alert">
+                                                    <div class="alert alert-dangere" role="alert">
                                                         {{ $data['message'] }}
                                                     </div>
                                                 @endif
 
+                                                @if(!empty($data['mess']))
+                                                    <div class="alert alert-success" role="alert">
+                                                        {{ $data['mess'] }}
+                                                    </div>
+                                                @endif
+
                                                 <div class="form-group">
+                                                    @if(!empty($data['name']))
+                                                        <input type="text" name="name" id="username" tabindex="1" class="form-control" placeholder="Username" value="{{ $data['name'] }}">
+                                                        @else
                                                         <input type="text" name="name" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
+                                                        @endif
                                                 </div>
                                                 <div class="form-group">
                                                     @if(!empty($data['email']))

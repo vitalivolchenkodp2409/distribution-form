@@ -37,6 +37,12 @@
                                 </ul>
                             @endif
                                 <div class="center-block">
+                                
+                                    @if(Session::has('fbres'))
+                                        <div class="form-group" align="center">
+                                            <p class="text-danger">{{ Session::get('fbres') }}</p>
+                                        </div>       
+                                    @endif
 
                                     @if(isset($data['provider']))
 
@@ -130,9 +136,11 @@
                                                     <div class="body">
 
                                                         <div class="row">
+                                                            <?php $count = 1 ?>
                                                             @foreach($friends as $friend)
-                                                                <p> <img src="{{$friend['link_picture']}}" alt="{{$friend['link_picture']}}" height="{{$friend['link_picture']}}">
-                                                                    {{$friend['id']}} : {{$friend['name']}}</p>
+                                                                <p><img src="{{$friend['link_picture']}}" alt="{{$friend['link_picture']}}" height="{{$friend['link_picture']}}">                                                                  
+                                                                        {{$count}}: {{$friend['name']}} <a href="/u/username">Oblio Profile</a></p>
+                                                            <?php $count += 1 ?>         
                                                             @endforeach
 
                                                         </div>
@@ -173,27 +181,7 @@
                                                     If you click Unlink Facebook, you lose 1 Arrows!
                                                 </p>
                                             </div>
-
-                                            {{--@if ( $fotos = session('fotos'))
-
-                                                <div class="card">
-                                                    <div class="header">
-                                                        <h2>
-                                                            Facebook fotos
-                                                        </h2>
-                                                    </div>
-                                                    <div class="body">
-
-                                                        <div class="row">
-                                                            @foreach($fotos as $foto)
-                                                                <div class="col-3">
-                                                                    <img src="{{$foto['images'][0]['source']}}" alt="{{$foto['id']}}" height="200">
-                                                                </div>
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endif--}}
+                                            
                                             @if ( $photos = $data['photos'])
 
 
@@ -205,13 +193,15 @@
                                                     </div>
                                                     <div class="body">
 
-                                                        <div class="row">
+                                                        <div class="row ">
                                                             @foreach($photos as $photo)
-                                                                <div class="col-3">
-                                                                    <img src="{{$photo['link_photo']}}" alt="{{$photo['id']}}" height="200">
+                                                                <div class="col-md-4">
+                                                                    <img src="{{$photo['link_photo']}}"  class="img-responsive" alt="{{$photo['id']}}" 
+                                                                     height="200">
                                                                 </div>
                                                             @endforeach
                                                         </div>
+                                                        
                                                     </div>
                                                 </div>
                                             @endif

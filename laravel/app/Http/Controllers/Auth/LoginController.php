@@ -48,20 +48,8 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except(['logout','redirectToProvider','handleProviderCallback']);
-        //$this->middleware('guest')->except('logout');
-    }
-
-
-    /**
-     * Redirect the user to the google authentication page.
-     *
-     * @return Response
-     *
-    public function redirectToProvider()
-    {
-        return Socialite::driver('google')->redirect();
-    }*/
+        $this->middleware('guest')->except(['logout','redirectToProvider','handleProviderCallback']);        
+    }    
 
     /**
      * Redirect the user to the OAuth Provider.
@@ -73,69 +61,20 @@ class LoginController extends Controller
 
         if($provider == 'facebook') {
             $res = Socialite::driver($provider)->scopes(['email', 'user_photos', 'user_friends'])->redirect();
-            //dd('From '.$provider,$res);
+            
             return $res;
         } else {
             $res = Socialite::with($provider)->redirect();
-            //dd('From '.$provider,$res);
+            
             return $res;
         }
 
-    }
-
-    /*public function redirectProvider($provider)
-    {
-        //dd('fdghdfuh');
-        return Socialite::driver($provider)->scopes(['email', 'user_photos', 'user_friends'])->redirect();
-    }*/
-    /**
-     * Obtain the user information from google.
-     *
-     * @return Response
-     *
-    public function handleProviderCallback(Request $request)
-    {
-        try {
-            $user = Socialite::driver('google')->stateless()->user();
-        } catch (\Exception $e) {
-            return redirect('/')->to('/');
-        }
-
-        // only allow people with @company.com to login
-        if(explode("@", $user->email)[1] !== 'gmail.com'){
-            return redirect()->to('/');
-        }
-        // check if they're an existing user
-        $existingUser = User::where('email', $user->email)->first();
-        if($existingUser){
-            // log them in
-            auth()->login($existingUser, true);
-            if ($existingUser->type == null) {
-                return redirect()->to('/select-type');
-            }
-
-        } else {
-            // create a new user
-            $newUser                  = new User;
-            $newUser->name            = $user->name;
-            $newUser->email           = $user->email;
-            $newUser->avatar          = $user->avatar;
-            $newUser->password        = bcrypt(rand(100000,100000000));
-            $newUser->ip              = $request->ip();
-            $newUser->save();
-            auth()->login($newUser, true);
-
-            Mail::to($user->email)->send(new Welcome());
-            return redirect()->to('/select-type');
-        }
-        return redirect()->to('/home');
-    }*/
+    }    
 
     public function handleProviderCallback($provider)
     {
         $user = Socialite::driver($provider)->stateless()->user();
-        $avatar = $user->getAvatar();
-        //dd($user);
+        $avatar = $user->getAvatar();        
         /////reddit not callback email
         $authUser = User::where('email', $user->email)->first();
 
@@ -143,8 +82,7 @@ class LoginController extends Controller
             Auth::login($authUser, true);
             Mail::to($user->email)->send(new Welcome());
             return redirect($this->redirectTo);
-        } else {
-            //dd($provider, \request()->all());
+        } else {            
             //check who provider
             if($provider == 'facebook') {
 
@@ -167,7 +105,7 @@ class LoginController extends Controller
                 }
 
                 $total_count = $response->getDecodedBody()['summary']['total_count'];
-                //dd($response->getDecodedBody());
+                
                 if ($total_count > 0) {
                     $arrows = 3;
                     Session::put('provider', $provider);
@@ -187,30 +125,36 @@ class LoginController extends Controller
 
             } elseif($provider == 'reddit') {
 
+                $provider_id = $user->id;
+                $socialeProv = SocialProvider::where('provider_id', $provider_id)->first();
+                $User = $socialeProv->user;
+               
+                if($socialeProv){
+                    Auth::login($User, true);                
+                    return redirect($this->redirectTo);
+                }
                 if(auth()->user()){
+                    
+                    $socProv = SocialProvider::where('provider_id', $provider_id)->first();
+                    
+                    if($socProv){
+                        Session::put('res', 'This reddit account is already using another user!');                        
+                        return redirect()->route('reddpage');                          
+                    }
+                    $aUser = Auth::user();
+                    $user_id = $aUser->id;
 
-                    $provider_id = $user->id;
 
-                    $user = Auth::user();
-                    $user_id = $user->id;
-
-                    $user->socialProviders()->create(
+                    $aUser->socialProviders()->create(
                         ['provider_id'  => $provider_id,
                             'provider'  => $provider,
                             'user_id'   => $user_id,
                         ]
                     );
                     return redirect()->route('reddpage');
-                }
-
-              /*  $socialProv = $user->socialProviders->where('provider_id', $provider_id)->first();
-                dd($socialProv);
-                if($socialProv){
-                    Auth::login($authUser, true);
-                    Mail::to($user->email)->send(new Welcome());
-                    return redirect($this->redirectTo);
-                }*/
-
+                } 
+                
+                $name = $user->user['name'];                
                 $comments_karma = $user->user['comment_karma'];
                 $arrows = floor($comments_karma/100);
                 $id = $user->id;
@@ -218,9 +162,9 @@ class LoginController extends Controller
                     Session::put('provider', $provider);
                     Session::put('provider_id', $user->id);
                     Session::put('avatar', $avatar);
-                    Session::put('arrows', $arrows);
+                    Session::put('arrows', $arrows);                    
 
-                    $data = ['register' => true, 'message' => "A user earns 1 Arrow per 100 reddit-comment-karma , max 30 Arrow!!"];
+                    $data = ['register' => true, 'name' => $name, 'mess' => "A user earns 1 Arrow per 100 reddit-comment-karma , max 30 Arrow!!"];
                     return view('welcome', compact('data'));
 
 

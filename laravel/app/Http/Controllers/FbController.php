@@ -28,30 +28,34 @@ class FbController extends Controller
     }
 
     public function index()
-    {
+    {        
+        $provide = 'facebook';
         $user = Auth::user();
-        $socialProviders = $user->socialProviders->first();
+        $user_id = $user->id;
 
-        if($socialProviders){
+        $fbprovider = SocialProvider::where('user_id', $user_id)->where('provider', $provide)->first(); 
+        if($fbprovider){
             $photos = $user->photo;
-            $friends = $user->friends;
-            //dd($photo);
+            $friends = $user->friends;            
             if($photos){
                 if($friends){
-                    $provider = $socialProviders->provider;
+                    
+                    $provider = $fbprovider->provider;
                     $data = ['mark' => true, 'photos' => $photos, 'friends' =>  $friends, 'provider' => $provider ];
                     return view('facebook',compact('data'));
-            }
-                $provider = $socialProviders->provider;
+                }
+            
+                $provider = $fbprovider->provider;
                 $data = ['mark' => true, 'photos' => $photos, 'provider' => $provider ];
                 return view('facebook',compact('data'));
             }
-
-        } else {
-            //dd('aaaa');
+        
+        } else {            
             $data = ['mark' => false];
             return view('facebook',compact('data'));
-        }
+        }        
+        $socialProviders = $user->socialProviders->first();
+        
     }
 
     public function loginWithFb($provider)
@@ -73,6 +77,11 @@ class FbController extends Controller
 
         $provider_id = $user->id;
 
+        $socProv = SocialProvider::where('provider_id', $provider_id)->first();                    
+                    if($socProv){
+                        Session::put('fbres', 'This facebook account is already using another user!');                        
+                        return redirect()->route('fbpage');
+                    }
         try {
 
             $response = $fb->get('/'.$provider_id.'/friends' ,$user->token );
@@ -87,34 +96,52 @@ class FbController extends Controller
 
         $user = Auth::user();
         $user_id = $user->id;
+        
+        $fbprovider = SocialProvider::where('user_id', $user_id)->where('provider', $provider)->first();        
+        if(!$fbprovider){
 
-        $user->socialProviders()->create(
-            ['provider_id'  => $provider_id,
-                'provider'  => $provider,
-                'user_id'   => $user_id,
-            ]
-        );
-        return redirect()->back();
+            $user->socialProviders()->create(
+                ['provider_id'  => $provider_id,
+                    'provider'  => $provider,
+                    'user_id'   => $user_id,
+                ]
+            );
+        }
+        return redirect()->route('fbpage');        
     }
 
     public function unlinkFb(Request $request)
     {
         $user = Auth::user();
         $user_id = $user->id;
-        $socialProvider = SocialProvider::where('user_id', $user_id)->first();
-        if($socialProvider['provider'] == 'facebook') {
-            $socialProvider->delete();
+        
+        $fb = SocialProvider::where('user_id', $user_id)->where('provider', 'facebook')->first();
+        if($fb) {
+            
+            $fb->delete();
 
+            $photo = Photo::where('user_id', $user_id)->delete();
+            
+            $friends = Friends::where('user_id', $user_id)->delete();
+            
             if ($request) {
-                $arrows = $user->arrows;
-                if ($arrows > 0) {
-                    $arrows -= 1;
+                if(Session::has('friends')){
+                    Session::forget('friends');
+                    Session::save();
                 }
-                //dd($arrows);
-                $socialProvider->delete();
+                if(Session::has('fotos')){
+                    Session::forget('fotos');
+                    Session::save();
+                }
+                $arrows = $user->arrows;                
+                if ($arrows > 0) {
+                    $user->arrows -= 1;
+                    $user->save();
+                }
+                
             }
         }
-        return redirect()->back();
+        return redirect()->route('fbpage');
 
     }
 
@@ -152,14 +179,13 @@ class FbController extends Controller
         }
 
         $friends = $responseFriends->getDecodedBody()['data'];
-        Session::put('friends', true);
-        //Session::push('friends', $friends);
+        Session::put('friends', true);        
         Session::save();
 
         $count = 0;
         foreach($friends as $friend) {
             $socialProvider = SocialProvider::where('provider_id', $friend['id'])->first();
-            //dd($socialProvider);
+            
             if(isset($socialProvider)) {
 
                 $authUser = $socialProvider->user;
@@ -170,11 +196,11 @@ class FbController extends Controller
                 }
                 $count += 1;
             }
-            //dd($friend);
+            
             $link_picture = $friend['picture']['data']['url'];
             $name = $friend['name'];
             $provider_id = $friend['id'];
-            //dd($friend);
+            
             $friends = Friends::where('provider_id', $provider_id)->first();
 
             if(!$friends){
@@ -193,8 +219,7 @@ class FbController extends Controller
             if($aUser->arrows < 30) {
                 $aUser->arrows += $count * 3;
                 $aUser->save();
-            }
-        //return redirect()->route('fbpage')->with('friends', $friends);
+            }        
         return redirect()->route('fbpage');
 
     }
@@ -249,8 +274,7 @@ class FbController extends Controller
 
         $fotos = $responsePhotos->getDecodedBody()['data'];
 
-        Session::put('fotos', true);
-        //Session::push('fotos', $fotos);
+        Session::put('fotos', true);        
         Session::save();
 
         $user = Auth::user();
@@ -259,11 +283,9 @@ class FbController extends Controller
         //save link fotos in db table photos
         foreach($fotos as $foto) {
             $link_foto = $foto['images'][0]['source'];
-
             $photki = Photo::where('link_photo', $link_foto)->first();
-            //dd($photki);
-            if(!$photki){
-                //dd('aaaaaaa');
+            
+            if(!$photki){                
                 $photos = $user->photo();
                 $photos->createMany([
                     [
@@ -272,7 +294,7 @@ class FbController extends Controller
                 ]);
             }
         }
-        //return redirect()->back()->with('fotos', $fotos);
+        
         return redirect()->route('fbpage');
 
     }
