@@ -12,22 +12,28 @@ use App\Mail\Welcome;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Session;
+use Exception;
 
 class UsersController extends Controller
 {
 
     public function store(Request $request)
-    {        
+    {               
+            
         $request->validate([    
-            'email' => 'required|unique:users',            
+            'email' => 'required|unique:users',             
             'name' => 'required',
             'password' => 'min:6',
             'password_confirmation' => 'required_with:password|same:password|min:6'
         ]);
+        
 
         $arrows = null;
-
+        
         if (Session::has('provider') && Session::has('provider_id')) {
+            
+            $provider_id = Session::get('provider_id');
+            
             $provider = Session::get('provider');
             $avatar = Session::get('avatar');            
             $arrows = Session::get('arrows');
@@ -63,14 +69,14 @@ class UsersController extends Controller
                 Session::forget('provider_id');
                 Session::forget('avatar');
                 Session::forget('arrows');
-                //Session::forget('provider_token');
+                Session::forget('provider_token');
                 Auth::login($user, true);
                 return redirect()->to('/select-type');
             } else {
-                $user_id = $authUser->id;
+
+                $user_id = $authUser->id;                
                 $provider = Session::get('provider');
                 $provider_id = Session::get('provider_id');
-
                 //create provider in db
                 $socialProvider = $authUser->socialProviders()->create([
                     'provider' => $provider,
@@ -86,7 +92,7 @@ class UsersController extends Controller
             }
 
         } else {
-
+            
             $user = User::create(
                 [
                     'name' => $request->input('name'),

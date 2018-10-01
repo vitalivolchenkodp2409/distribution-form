@@ -123,27 +123,25 @@ class LoginController extends Controller
                     return view('welcome', compact('data'));
                 }
 
-            } elseif($provider == 'reddit') {
+            } elseif($provider == 'reddit') {                
 
                 $provider_id = $user->id;
-                $socialeProv = SocialProvider::where('provider_id', $provider_id)->first();
-                $User = $socialeProv->user;
-               
-                if($socialeProv){
-                    Auth::login($User, true);                
-                    return redirect($this->redirectTo);
-                }
-                if(auth()->user()){
+                $socialeProv = SocialProvider::where('provider_id', $provider_id)->first();  
+                
+                if(auth()->user()){ 
+                    $uId = auth()->user()->id;
+                    if(isset($socialeProv)){
+                        if($uId != $socialeProv->user_id){
+                            Session::put('res', 'This reddit account is already using another user!');                        
+                            return redirect()->route('reddpage');  
+                        }  
+                        $User = $socialeProv->user;
+                        Auth::login($User, true);                
+                        return redirect($this->redirectTo);    
+                    } 
                     
-                    $socProv = SocialProvider::where('provider_id', $provider_id)->first();
-                    
-                    if($socProv){
-                        Session::put('res', 'This reddit account is already using another user!');                        
-                        return redirect()->route('reddpage');                          
-                    }
                     $aUser = Auth::user();
                     $user_id = $aUser->id;
-
 
                     $aUser->socialProviders()->create(
                         ['provider_id'  => $provider_id,
@@ -151,8 +149,17 @@ class LoginController extends Controller
                             'user_id'   => $user_id,
                         ]
                     );
+                    Session::forget('res');
+
                     return redirect()->route('reddpage');
-                } 
+
+                } else {
+
+                    if(isset($socialeProv)){
+                        $User = $socialeProv->user;
+                        Auth::login($User, true);                
+                        return redirect($this->redirectTo); 
+                    }
                 
                 $name = $user->user['name'];                
                 $comments_karma = $user->user['comment_karma'];
@@ -163,11 +170,10 @@ class LoginController extends Controller
                     Session::put('provider_id', $user->id);
                     Session::put('avatar', $avatar);
                     Session::put('arrows', $arrows);                    
-
                     $data = ['register' => true, 'name' => $name, 'mess' => "A user earns 1 Arrow per 100 reddit-comment-karma , max 30 Arrow!!"];
                     return view('welcome', compact('data'));
 
-
+                }
             }
         }
     }

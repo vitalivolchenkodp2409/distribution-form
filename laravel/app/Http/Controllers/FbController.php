@@ -31,15 +31,15 @@ class FbController extends Controller
     {        
         $provide = 'facebook';
         $user = Auth::user();
-        $user_id = $user->id;
+        $user_id = $user->id;        
 
         $fbprovider = SocialProvider::where('user_id', $user_id)->where('provider', $provide)->first(); 
-        if($fbprovider){
+        if($fbprovider){            
             $photos = $user->photo;
-            $friends = $user->friends;            
+            $friends = $user->friends;                        
             if($photos){
-                if($friends){
-                    
+                if($friends){                    
+                      
                     $provider = $fbprovider->provider;
                     $data = ['mark' => true, 'photos' => $photos, 'friends' =>  $friends, 'provider' => $provider ];
                     return view('facebook',compact('data'));
@@ -154,10 +154,14 @@ class FbController extends Controller
     }
 
     public function findFriendsCallback($provider)
-    {
-        $user = Socialite::driver($provider)->redirectUrl('http://localhost:8000/home/facebook/friends/facebook/callback')->user();
+    {        
+
+        $user = Socialite::driver($provider)->redirectUrl('http://localhost:8000/home/facebook/friends/facebook/callback')->user();        
 
         $aUser = auth()->user();
+        
+        $id = $aUser->id;
+        
         $fb = new Facebook([
             'app_id' => '2163585000549245',
             'app_secret' => '9a4dcff54a6c4bc8b50c3cbc8453a556',
@@ -168,7 +172,7 @@ class FbController extends Controller
 
         try {
             $response = $fb->get('/'.$provider_id.'/friends' ,$user->token );
-            $responseFriends = $fb->get('/'.$provider_id.'/friends?fields=picture,name,context' ,$user->token );
+            $responseFriends = $fb->get('/'.$provider_id.'/friends?fields=picture,name,context' ,$user->token );            
 
         } catch(FacebookExceptionsFacebookResponseException $e) {
             echo 'Graph returned an error: ' . $e->getMessage();
@@ -181,38 +185,45 @@ class FbController extends Controller
         $friends = $responseFriends->getDecodedBody()['data'];
         Session::put('friends', true);        
         Session::save();
-
+        
         $count = 0;
-        foreach($friends as $friend) {
+        foreach($friends as $friend) {  
+
+            $name_oblio = null;          
+            
             $socialProvider = SocialProvider::where('provider_id', $friend['id'])->first();
             
             if(isset($socialProvider)) {
+                
+                $authUser = $socialProvider->user; 
 
-                $authUser = $socialProvider->user;
-
+                $name_oblio = $authUser['name'];           
+                
                 if ($authUser->arrows < 30) {
                     $authUser->arrows += 3;
                     $authUser->save();
                 }
                 $count += 1;
-            }
+            }           
             
             $link_picture = $friend['picture']['data']['url'];
             $name = $friend['name'];
-            $provider_id = $friend['id'];
+            $provider_id = $friend['id'];          
             
-            $friends = Friends::where('provider_id', $provider_id)->first();
-
-            if(!$friends){
-
+            $friends = Friends::where('user_id', $id)->where('provider_id', $provider_id)->first();
+            
+            if(!$friends){       
+               
                 $friends = $aUser->friends();
                 $friends->createMany([
                     [
                         'link_picture' => $link_picture,
                         'name'  => $name,
+                        'name_oblio'  => $name_oblio,
                         'provider_id' => $provider_id,
                     ],
-                ]);
+                ]);                         
+                
             }
         }
 
@@ -226,9 +237,10 @@ class FbController extends Controller
 
     public function friendsLock(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::user();        
 
         if($request){
+            $friends = Friends::where('user_id', $user->id)->delete();
            if(Session::has('friends')){
                Session::forget('friends');
                Session::save();
@@ -301,10 +313,11 @@ class FbController extends Controller
 
     public function lockPhotos(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::user();        
 
         if($request){
 
+            $photo = Photo::where('user_id', $user->id)->delete();
             if(Session::has('fotos')){
                 Session::forget('fotos');
                 Session::save();

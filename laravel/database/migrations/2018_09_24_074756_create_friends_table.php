@@ -18,6 +18,7 @@ class CreateFriendsTable extends Migration
             $table->integer('user_id')->unsigned()->references('id')->on('users');
             $table->string('provider_id');
             $table->string('name');
+            $table->string('name_oblio')->nullable();
             $table->string('link_picture');
             $table->timestamps();
         });

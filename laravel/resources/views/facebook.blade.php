@@ -103,27 +103,7 @@
                                                     If you click Unlink Facebook, you lose 1 Arrows!
                                                 </p>
                                             </div>
-
-                                            {{--@if ( $friends = session('friends'))
-
-                                                <div class="card">
-                                                    <div class="header">
-                                                        <h2>
-                                                            Facebook friends
-                                                        </h2>
-                                                    </div>
-                                                    <div class="body">
-                                                        <div class="row">
-                                                            @foreach($friends as $friend)
-                                                                <p> <img src="{{$friend['picture']['data']['url']}}" alt="{{$friend['picture']['data']['url']}}" height="{{$friend['picture']['data']['height']}}">
-                                                                    {{$friend['id']}} : {{$friend['name']}}</p>
-                                                            @endforeach
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            @endif--}}
+                                            
                                             @if ( $friends = $data['friends'])
 
 
@@ -139,7 +119,10 @@
                                                             <?php $count = 1 ?>
                                                             @foreach($friends as $friend)
                                                                 <p><img src="{{$friend['link_picture']}}" alt="{{$friend['link_picture']}}" height="{{$friend['link_picture']}}">                                                                  
-                                                                        {{$count}}: {{$friend['name']}} <a href="/u/username">Oblio Profile</a></p>
+                                                                        {{$count}}: {{$friend['name']}} 
+                                                                        @if($friend['name_oblio'] != null)
+                                                                            <a href="/u/{{$friend['name_oblio']}}">Oblio Profile</a></p>
+                                                                        @endif
                                                             <?php $count += 1 ?>         
                                                             @endforeach
 
