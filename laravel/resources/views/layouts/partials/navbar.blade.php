@@ -110,13 +110,7 @@
                                 <span>Link Facebook</span>
                             </a>
                         </li>
-
-                       {{-- <li>
-                            <a href="{{ url('/fives/create') }}">
-                                <i class="material-icons">camera_roll</i>
-                                <span>Reddit Karma</span>
-                            </a>
-                        </li>--}}
+                       
                         <li>
                             <a href="{{ route('reddpage') }}">
                                 <i class="material-icons">camera_roll</i>
@@ -315,23 +309,4 @@
         </aside> --}}
         <!-- #END# Right Sidebar -->
     </section>
-
-    <script>
-        FB.init({
-            appId: '{your-app-id}',
-            cookie: true,
-            xfbml: true,
-            version: 'v2.12'
-        });
-
-        function logoutFromFacebookAndRedirect(redirectUrl) {
-            FB.getLoginStatus(function (response) {
-                if (response.status == 'connected')
-                    FB.logout(function (response) {
-                        window.location.href = redirectUrl;
-                    });
-                else
-                    window.location.href = redirectUrl;
-            });
-        }
-</script>
+    
