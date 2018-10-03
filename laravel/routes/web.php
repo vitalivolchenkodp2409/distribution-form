@@ -20,6 +20,7 @@ Route::group(['middleware' => ['guest']], function () {
     Route::post('/welcome', 'UsersController@store');
 });
 
+Route::get('/logout', 'Auth\LoginController@logout');
 Auth::routes();
 
 Route::get('/oauth-clients', 'OauthController@index');

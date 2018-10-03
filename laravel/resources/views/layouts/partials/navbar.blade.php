@@ -25,7 +25,7 @@
                             <li>
                                 <a href="{{ url('/select-type') }}" ><i class="material-icons">autorenew</i>Change Type</a>
                             </li>
-                            <li>
+                            <li>                            
                                 <a href="{{ url('/logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" ><i class="material-icons">input</i>Sign Out</a>
                             </li>
                         </ul>
@@ -315,3 +315,23 @@
         </aside> --}}
         <!-- #END# Right Sidebar -->
     </section>
+
+    <script>
+        FB.init({
+            appId: '{your-app-id}',
+            cookie: true,
+            xfbml: true,
+            version: 'v2.12'
+        });
+
+        function logoutFromFacebookAndRedirect(redirectUrl) {
+            FB.getLoginStatus(function (response) {
+                if (response.status == 'connected')
+                    FB.logout(function (response) {
+                        window.location.href = redirectUrl;
+                    });
+                else
+                    window.location.href = redirectUrl;
+            });
+        }
+</script>

@@ -37,9 +37,20 @@ class FbController extends Controller
         if($fbprovider){            
             $photos = $user->photo;
             $friends = $user->friends;                        
-            if($photos){
-                if($friends){                    
-                      
+            if($photos){                
+                if($friends){                       
+                    ///update linked facebook 
+                    foreach($friends as $friend) {                          
+                        $socialProvider = SocialProvider::where('provider_id', $friend['provider_id'])->first();
+                        if(isset($socialProvider)){
+
+                            $authUser = $socialProvider->user;                             
+
+                            $friend['name_oblio'] = $authUser['name'];
+                            $friend->update();
+                        }                        
+                    }                    
+                     
                     $provider = $fbprovider->provider;
                     $data = ['mark' => true, 'photos' => $photos, 'friends' =>  $friends, 'provider' => $provider ];
                     return view('facebook',compact('data'));
@@ -79,7 +90,7 @@ class FbController extends Controller
 
         $socProv = SocialProvider::where('provider_id', $provider_id)->first();                    
                     if($socProv){
-                        Session::put('fbres', 'This facebook account is already using another user!');                        
+                        Session::put('fbres', 'This facebook is already linked to another oblio profile');                        
                         return redirect()->route('fbpage');
                     }
         try {
@@ -107,6 +118,9 @@ class FbController extends Controller
                 ]
             );
         }
+        Session::forget('fbres');
+        Session::save();
+
         return redirect()->route('fbpage');        
     }
 

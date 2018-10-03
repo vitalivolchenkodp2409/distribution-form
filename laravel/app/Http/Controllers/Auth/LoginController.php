@@ -18,6 +18,8 @@ use App\User;
 use Illuminate\Http\Request;
 use Session;
 use App\SocialProvider;
+use Cache;
+use Artisan;
 
 class LoginController extends Controller
 {
@@ -32,7 +34,7 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
+    use AuthenticatesUsers;    
 
     /**
      * Where to redirect users after login.
@@ -51,17 +53,23 @@ class LoginController extends Controller
         $this->middleware('guest')->except(['logout','redirectToProvider','handleProviderCallback']);        
     }    
 
+    public function logout(Request $request) 
+    {  
+        Auth::logout();
+        return redirect('/');
+    }
+    
     /**
      * Redirect the user to the OAuth Provider.
      *
      * @return Response
      */
     public function redirectToProvider($provider)
-    {
-
+    {  
         if($provider == 'facebook') {
-            $res = Socialite::driver($provider)->scopes(['email', 'user_photos', 'user_friends'])->redirect();
-            
+
+            $res = Socialite::driver($provider)->scopes(['email', 'user_photos', 'user_friends'])->redirect();            
+                        
             return $res;
         } else {
             $res = Socialite::with($provider)->redirect();
@@ -72,8 +80,10 @@ class LoginController extends Controller
     }    
 
     public function handleProviderCallback($provider)
-    {
-        $user = Socialite::driver($provider)->stateless()->user();
+    {         
+        
+        $user = Socialite::driver($provider)->stateless()->user();        
+
         $avatar = $user->getAvatar();        
         /////reddit not callback email
         $authUser = User::where('email', $user->email)->first();
@@ -106,7 +116,7 @@ class LoginController extends Controller
 
                 $total_count = $response->getDecodedBody()['summary']['total_count'];
                 
-                if ($total_count > 0) {
+                if ($total_count > 100) {
                     $arrows = 3;
                     Session::put('provider', $provider);
                     Session::put('provider_id', $user->id);
@@ -132,7 +142,7 @@ class LoginController extends Controller
                     $uId = auth()->user()->id;
                     if(isset($socialeProv)){
                         if($uId != $socialeProv->user_id){
-                            Session::put('res', 'This reddit account is already using another user!');                        
+                            Session::put('res', 'This Reddit is already linked to another oblio profile');                        
                             return redirect()->route('reddpage');  
                         }  
                         $User = $socialeProv->user;
